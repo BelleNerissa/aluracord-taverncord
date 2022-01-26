@@ -1,41 +1,9 @@
 import { Box, Button, Text, TextField, Image } from "@skynexui/components";
+import React, { useState } from "react";
 import appConfig from "../config.json";
-function GlobalStyle() {
-  return (
-    <style global jsx>
-      {`
-        * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-          list-style: none;
-        }
-        body {
-          font-family: "Open Sans", sans-serif;
-        }
-        /* App fit Height */
-        html,
-        body,
-        #__next {
-          min-height: 100vh;
-          display: flex;
-          flex: 1;
-        }
-        #__next {
-          flex: 1;
-        }
-        #__next > * {
-          flex: 1;
-        }
-        a, a:hover, a:focus, a:active {
-            text-decoration: none;
-            color: inherit;
-        }
-        /* ./App fit Height */
-      `}
-    </style>
-  );
-}
+
+//Router
+import { useRouter } from "next/router";
 
 function Titulo(props) {
   const Tag = props.tag || "h1";
@@ -53,22 +21,14 @@ function Titulo(props) {
   );
 }
 
-// function HomePage() {
-//   return (
-//     <div>
-//       <GlobalStyle />
-//       <Title tag="h1">Bem vindo de volta, aventureiro!</Title>
-//       <h2>Taverncord - Alura Tavern</h2>
-//     </div>
-//   );
-// }
-
 export default function PaginaInicial() {
-  const username = "BelleNerissa";
+  const [username, setUsername] = useState("");
+  const router = useRouter();
+
+  const [minUsername, setMinUsername] = useState(true);
 
   return (
     <>
-      <GlobalStyle />
       <Box
         styleSheet={{
           display: "flex",
@@ -103,8 +63,15 @@ export default function PaginaInicial() {
           }}
         >
           {/* Formulário */}
+
           <Box
             as="form"
+            onSubmit={function (event) {
+              event.preventDefault();
+
+              router.push("/chat");
+            }}
+            isDisabled={minUsername}
             styleSheet={{
               display: "flex",
               flexDirection: "column",
@@ -128,10 +95,21 @@ export default function PaginaInicial() {
                 fontWeight: "500",
               }}
             >
-              <a href="https://github.com/BelleNerissa" target="blank">{appConfig.name}</a>
+              <a href="https://github.com/BelleNerissa" target="blank">
+                {appConfig.name}
+              </a>
             </Text>
 
             <TextField
+              type="text"
+              value={username}
+              onChange={function (event) {
+                setUsername(event.target.value);
+                event.target.value.length <= 3
+                  ? setMinUsername(true)
+                  : setMinUsername(false);
+                console.log(minUsername);
+              }}
               fullWidth
               textFieldColors={{
                 neutral: {
@@ -146,6 +124,7 @@ export default function PaginaInicial() {
               type="submit"
               label="Entrar"
               fullWidth
+              disabled={minUsername}
               buttonColors={{
                 contrastColor: appConfig.theme.colors.neutrals["000"],
                 mainColor: appConfig.theme.colors.primary[500],
@@ -172,24 +151,52 @@ export default function PaginaInicial() {
               minHeight: "240px",
             }}
           >
-            <Image
-              styleSheet={{
-                borderRadius: "50%",
-                marginBottom: "16px",
-              }}
-              src={`https://github.com/${username}.png`}
-            />
-            <Text
-              variant="body4"
-              styleSheet={{
-                color: appConfig.theme.colors.neutrals[200],
-                backgroundColor: appConfig.theme.colors.neutrals[900],
-                padding: "3px 10px",
-                borderRadius: "1000px",
-              }}
-            >
-              {username}
-            </Text>
+            {!minUsername ? (
+              <>
+                <Image
+                  styleSheet={{
+                    borderRadius: "50%",
+                    marginBottom: "16px",
+                  }}
+                  disabled={minUsername}
+                  src={`https://github.com/${username}.png`}
+                />
+                <Text
+                  variant="body4"
+                  styleSheet={{
+                    color: appConfig.theme.colors.neutrals[200],
+                    backgroundColor: appConfig.theme.colors.neutrals[900],
+                    padding: "3px 10px",
+                    borderRadius: "1000px",
+                  }}
+                >
+                  {username}
+                </Text>
+              </>
+            ) : (
+              <>
+                <Image
+                  styleSheet={{
+                    borderRadius: "50%",
+                    marginBottom: "16px",
+                  }}
+                  disabled={minUsername}
+                  src={`https://c.tenor.com/a-9OPu0mBaYAAAAd/taverna-biribiri.gif`}
+                />
+                <Text
+                  variant="body4"
+                  styleSheet={{
+                    color: appConfig.theme.colors.neutrals[200],
+                    backgroundColor: appConfig.theme.colors.neutrals[900],
+                    padding: "3px 10px",
+                    borderRadius: "1000px",
+                    textAlign: "center"
+                  }}
+                >
+                  {"Qual seu nome, meu chapa?"}
+                </Text>
+              </>
+            )}
           </Box>
           {/* Photo Area */}
         </Box>
