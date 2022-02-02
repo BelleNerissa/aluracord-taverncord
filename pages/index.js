@@ -68,8 +68,7 @@ export default function PaginaInicial() {
             as="form"
             onSubmit={function (event) {
               event.preventDefault();
-
-              router.push("/chat");
+              router.push(`/chat?username=${username}`);
             }}
             isDisabled={minUsername}
             styleSheet={{
@@ -104,11 +103,11 @@ export default function PaginaInicial() {
               type="text"
               value={username}
               onChange={function (event) {
-                setUsername(event.target.value);
-                event.target.value.length <= 3
+                const valor = event.target.value;
+                setUsername(valor);
+                valor.length <= 3
                   ? setMinUsername(true)
                   : setMinUsername(false);
-                console.log(minUsername);
               }}
               fullWidth
               textFieldColors={{
@@ -190,7 +189,7 @@ export default function PaginaInicial() {
                     backgroundColor: appConfig.theme.colors.neutrals[900],
                     padding: "3px 10px",
                     borderRadius: "1000px",
-                    textAlign: "center"
+                    textAlign: "center",
                   }}
                 >
                   {"Qual seu nome, meu chapa?"}
