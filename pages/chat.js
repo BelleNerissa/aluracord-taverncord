@@ -7,8 +7,8 @@ import appConfig from "../config.json";
 import { ButtonSendSticker } from "../src/components/ButtonSendSticker";
 
 //Componets Chat
-import Header from "./chat/header";
-import MessageList from "./chat/messageList";
+import Header from "../src/components/header";
+import MessageList from "../src/components/messageList";
 
 //*Notas
 // FETCH API
