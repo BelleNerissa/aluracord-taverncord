@@ -2,6 +2,7 @@ import { Box, Image, Text } from "@skynexui/components";
 import appConfig from "../../config.json";
 
 export default function MessageList(props) {
+
   return (
     <Box
       tag="ul"
@@ -33,6 +34,7 @@ export default function MessageList(props) {
           }
         `}</style>
         {props.mensagens.map((mensagem) => {
+          console.log(mensagem)
           return (
             <>
               <Text
@@ -74,7 +76,8 @@ export default function MessageList(props) {
                     }}
                     tag="span"
                   >
-                    {new Date().toLocaleDateString()}
+                    {new Date(mensagem.created_at).toLocaleDateString()}
+                   
                   </Text>
                 </Box>
                 {mensagem.texto.startsWith(":sticker:") ? (
