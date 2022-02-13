@@ -47,7 +47,7 @@ export default function MessageList(props) {
                   marginRight: "10px",
                   hover: {
                     backgroundColor: appConfig.theme.colors.primary["010"],
-                    // color:appConfig.theme.colors.primary[100],
+                   
                   },
                 }}
               >
@@ -94,7 +94,6 @@ export default function MessageList(props) {
                     fontSize: "14px",
                     fontWeight: "bold",
                     marginLeft: "8px",
-                    // color: appConfig.theme.colors.neutrals[800],
                   }}>
                   {mensagem.texto}
                   </Text>
