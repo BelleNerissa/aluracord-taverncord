@@ -45,7 +45,7 @@ export function ButtonSendSticker(props) {
             backgroundColor: appConfig.theme.colors.neutrals[800],
             width: {
               xs: "200px",
-              sm: "190px",
+              sm: "290px",
             },
             height: "300px",
             right: "30px",

@@ -70,7 +70,7 @@ export default function PaginaInicial() {
               event.preventDefault();
               router.push(`/chat?username=${username}`);
             }}
-            isdisabled={minUsername}
+            isdisabled={minUsername.toString()}
             styleSheet={{
               display: "flex",
               flexDirection: "column",
