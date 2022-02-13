@@ -4,7 +4,11 @@ import { createClient } from "@supabase/supabase-js";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import appConfig from "../config.json";
-import { ButtonSendSticker } from '../src/components/ButtonSendSticker';
+import { ButtonSendSticker } from "../src/components/ButtonSendSticker";
+
+//Componets Chat
+import Header from "./chat/header";
+import MessageList from "./chat/messageList";
 
 //*Notas
 // FETCH API
@@ -12,36 +16,36 @@ import { ButtonSendSticker } from '../src/components/ButtonSendSticker';
 // fetch('https://api.github.com/users/BelleNerissa').then(async (resp) => { const resposta = await resp.json(); //console.log(resposta);})
 // lib supabase-js @supabase/supabase-js
 
+//*Metodo manual que a biblioteca faz
+// fetch(`${SUPABASE_URL}/rest/v1/listaDeMensagens?select=*`, {
+//   headers: {
+//     "Content-Type": "application/json",
+//     apiKey: SUPABASE_ANON_KEY,
+//     Authorization: "Bearer" + SUPABASE_ANON_KEY,
+//   },
+// })
+//   .then((resp) => {
+//     return resp.json();
+//   })
+//   .then((response) => {
+//     //console.log(response);
+//   });
+
 //* Integração SUPABASE
+
 const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzgxMDMyNiwiZXhwIjoxOTU5Mzg2MzI2fQ.fX-lUHfx_3kvnQE9XWokC9bWxhglkgonOwiYvEYMRGY";
 const SUPABASE_URL = "https://cqqbgintwkuaevupuutf.supabase.co";
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-
-/***Metodo manual que a biblioteca faz****
-fetch(`${SUPABASE_URL}/rest/v1/listaDeMensagens?select=*`, {
-  headers: {
-    "Content-Type": "application/json",
-    apiKey: SUPABASE_ANON_KEY,
-    Authorization: "Bearer" + SUPABASE_ANON_KEY,
-  },
-})
-  .then((resp) => {
-    return resp.json();
-  })
-  .then((response) => {
-    //console.log(response);
-  });
-  */
-
 function escutaMensagensEmTempoReal(adicionaMensagem) {
-  return supabaseClient.from('listaDeMensagens').on('INSERT', (newResp) => {
-    //console.log("atualizou", newResp);
-    adicionaMensagem(newResp.new);
-  }).subscribe();
+  return supabaseClient
+    .from("listaDeMensagens")
+    .on("INSERT", (newResp) => {
+      adicionaMensagem(newResp.new);
+    })
+    .subscribe();
 }
-
 
 export default function chat() {
   const router = useRouter();
@@ -56,16 +60,15 @@ export default function chat() {
     supabaseClient
       .from("listaDeMensagens")
       .select("*")
-      .order('id', { ascending: false })
+      .order("id", { ascending: false })
       .then(({ data }) => {
-        // //console.log("dadosDoSupabase", data);
         setListaDeMensagens(data);
       });
 
     const subscription = escutaMensagensEmTempoReal((novaMensagem) => {
-      console.log('Nova mensagem:', novaMensagem);
-      console.log('listaDeMensagens:', listaDeMensagens);
-      // Quero reusar um valor de referencia (objeto/array) 
+      // console.log("Nova mensagem:", novaMensagem);
+      // console.log("listaDeMensagens:", listaDeMensagens);
+      // Quero reusar um valor de referencia (objeto/array)
       // Passar uma função pro setState
 
       // setListaDeMensagens([
@@ -73,20 +76,14 @@ export default function chat() {
       //     ...listaDeMensagens
       // ])
       setListaDeMensagens((valorAtualDaLista) => {
-        console.log('valorAtualDaLista:', valorAtualDaLista);
-        return [
-          novaMensagem,
-          ...valorAtualDaLista,
-        ]
+        return [novaMensagem, ...valorAtualDaLista];
       });
-      //console.log(mensagem);
     });
     return () => {
       subscription.unsubscribe();
-    }
+    };
   }, []);
   // 'listener' ➡ em descorrencia da alteração de estado dessa [variavel] a função useEffect é chamada novamente
-
 
   //*Adicionar a mensagem a lista de mensagens
   function handleNovaMensagem(mensagemNova) {
@@ -96,16 +93,16 @@ export default function chat() {
       texto: mensagemNova,
     };
     supabaseClient
-      .from("listaDeMensagens").insert([
+      .from("listaDeMensagens")
+      .insert([
         //Tem que ser um obj com os mesmos campos da tabela do supabase
-        mensagem
-      ]).then(({ data }) => {
-        //console.log(data, "msm handle")
-        console.log(data)
+        mensagem,
+      ])
+      .then(({ data }) => {
+        // console.log(data);
       });
     setMensagem("");
   }
-
 
   return (
     <Box
@@ -130,13 +127,13 @@ export default function chat() {
           backgroundColor: appConfig.theme.colors.neutrals[900],
           backgroundImage:
             "url(https://i.pinimg.com/564x/ad/60/f9/ad60f95988158832f118bc0267dc8447.jpg)",
-          height: "100%",
-          maxWidth: "95%",
+          height: "80%",
+          maxWidth: "70%",
           maxHeight: "95vh",
           padding: "32px",
         }}
       >
-        <Header />
+        <Header user={userAtual} />
         <Box
           styleSheet={{
             position: "relative",
@@ -144,13 +141,19 @@ export default function chat() {
             flex: 1,
             height: "80%",
             backgroundColor: appConfig.theme.colors.neutrals["010"],
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "cover",
+            backgroundImage:
+              "url(https://i.pinimg.com/564x/99/4f/2c/994f2ccfc0aa8203700d0fb10dd92009.jpg)",
+              // BackgroundDirection: "center",
             flexDirection: "column",
             borderRadius: "5px",
             padding: "16px",
+            overflow: "hidden",
           }}
         >
           {console.log(listaDeMensagens, "listaDeMensagens")}
-          <MessageList mensagens={listaDeMensagens} />
+          <MessageList mensagens={listaDeMensagens.reverse()} />
           {/* {listaDeMensagens.map((mensagemAtual) => {
             return (
                 <>
@@ -169,6 +172,7 @@ export default function chat() {
           >
             {/* Campo de Texto */}
             <TextField
+              name="campo_mensagens"
               value={mensagem}
               onChange={(event) => {
                 const valor = event.target.value;
@@ -195,9 +199,11 @@ export default function chat() {
               }}
             />
             {/* Callback */}
-            <ButtonSendSticker onStickerClick={(sticker) => {
-              handleNovaMensagem(`:sticker:${sticker}`)
-            }} />
+            <ButtonSendSticker
+              onStickerClick={(sticker) => {
+                handleNovaMensagem(`:sticker:${sticker}`);
+              }}
+            />
             <Button
               type="submit"
               variant="primary"
@@ -216,103 +222,6 @@ export default function chat() {
           </Box>
         </Box>
       </Box>
-    </Box>
-  );
-}
-
-function Header() {
-  return (
-    <>
-      <Box
-        styleSheet={{
-          width: "100%",
-          marginBottom: "16px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <Text variant="heading5">Chat</Text>
-        <Button
-          variant="primary"
-          colorVariant="primary"
-          label="Logout"
-          href="/"
-        />
-      </Box>
-    </>
-  );
-}
-
-function MessageList(props) {
-  return (
-    <Box
-      tag="ul"
-      styleSheet={{
-        overflow: "scroll",
-        display: "flex",
-        flexDirection: "column-reverse",
-        flex: 1,
-        color: appConfig.theme.colors.neutrals["000"],
-        marginBottom: "16px",
-        // overflow: "hidden",
-      }}
-    >
-      {props.mensagens.map((mensagem) => {
-        return (
-          <>
-            <Text
-              key={mensagem.id}
-              tag="li"
-              styleSheet={{
-                borderRadius: "5px",
-                padding: "6px",
-                marginBottom: "12px",
-                hover: {
-                  backgroundColor: appConfig.theme.colors.neutrals[700],
-                },
-              }}
-            >
-              <Box
-                styleSheet={{
-                  marginBottom: "8px",
-                }}
-              >
-                <Image
-                  styleSheet={{
-                    width: "20px",
-                    height: "20px",
-                    borderRadius: "50%",
-                    display: "inline-block",
-                    marginRight: "8px",
-                  }}
-                  src={`https://github.com/${mensagem.de}.png`}
-                />
-                <Text tag="strong">{mensagem.de}</Text>
-                <Text
-                  styleSheet={{
-                    fontSize: "10px",
-                    marginLeft: "8px",
-                    color: appConfig.theme.colors.neutrals[300],
-                  }}
-                  tag="span"
-                >
-                  {new Date().toLocaleDateString()}
-                </Text>
-              </Box>
-              {mensagem.texto.startsWith(':sticker:') ? (
-                <Image styleSheet={{
-                  width: "25%",
-                  // height: "20%",
-                  display: "inline-block",
-                  marginRight: "8px",
-                }} src={mensagem.texto.replace(':sticker:', '')} />
-              ) : (mensagem.texto)}
-
-            </Text>
-          </>
-        );
-      })}
     </Box>
   );
 }
